@@ -1,0 +1,9 @@
+
+GET http://localhost:4400/photosapi
+
+###
+
+GET http://localhost:4400/photosapi/1
+
+###
+GET http://localhost:4400/employeesapi
