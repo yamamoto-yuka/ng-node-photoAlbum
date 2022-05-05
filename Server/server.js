@@ -93,7 +93,74 @@ server.get("/employeesapi", (req, res) => {
     if (error) {
       res.json({EroorMessage: error});
     } else {
-      res.json(data);
+      res.json(data[0]);
+    }
+  });
+});
+
+server.get("/employeesapi/:id", (req, res) => {
+  let emp_id = req.params.id;
+  let empSP = " CALL `One_emp_data`(?)";
+  db.query(empSP, [emp_id], (error, data, fields) => {
+    if (error) {
+      res.json({ErrorMessafe: error});
+    } else {
+      res.json(data[0]);
+    }
+  });
+});
+
+server.post("/login", (req, res) => {
+  let email = req.body.email;
+  let password = req.body.password;
+  // let loginQuery = "SELECT * FROM `users` WHERE users.email = `${email}` AND users.password = `${password}`"
+  let loginQuery = "CALL `login`(?,?)";
+  db.query(loginQuery, [email, password], (error, data, fields) => {
+    if (error) {
+      res.json({ErrorMessage: error});
+    } else {
+      if (data[0].length === 0) {
+        res.json({
+          login: false,
+          message: "Sorry, you have provided wrong credentials",
+        });
+      } else {
+        res.json({
+          data: data[0],
+          login: true,
+          message: "Login successful",
+          // UserID: data[0].UserID,
+          // email: data[0].email,
+          // Crete the Auth KEy
+        });
+      }
+    }
+  });
+});
+
+server.post("/signup", (req, res) => {
+  let name = req.body.name;
+  let email = req.body.email;
+  let password = req.body.password;
+  // let query = "INSERT INTO `users` (`UserID`, `user_name`, `email`, `password`) VALUES (NULL, ?, ?, ?);";
+  let querySP = "CALL `Insert_user`(?, ?, ?)";
+  db.query(querySP, [name, email, password], (error, data, fields) => {
+    if (error) {
+      res.json({ErrorMessage: error});
+    } else {
+      // if ((name && email && password) === "") {
+      //   res.json({
+      //     data: data[0],
+      //     signup: false,
+      //     message: "Sorry, please input every information.",
+      //   });
+      // } else {
+      res.json({
+        data: data[0],
+        signup: true,
+        message: "Signup successful.",
+      });
+      // }
     }
   });
 });

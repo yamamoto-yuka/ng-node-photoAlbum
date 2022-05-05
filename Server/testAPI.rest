@@ -1,4 +1,6 @@
 
+@url = http://localhost:4400
+
 GET http://localhost:4400/photosapi
 
 ###
@@ -7,3 +9,26 @@ GET http://localhost:4400/photosapi/1
 
 ###
 GET http://localhost:4400/employeesapi
+
+###
+GET {{url}}/employeesapi/1
+
+###
+POST {{url}}/login
+Content-Type: application/json
+
+{
+  "email":"john@vanarts.com",
+  "password":"234561"
+}
+
+###
+POST {{url}}/signup
+Content-Type: application/json
+
+{
+  "name": "asfg",
+  "email": "dafs",
+  "password": "asfd"
+}
+
