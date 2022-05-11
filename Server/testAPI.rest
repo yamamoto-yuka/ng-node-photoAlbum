@@ -27,8 +27,23 @@ POST {{url}}/signup
 Content-Type: application/json
 
 {
-  "name": "asfg",
+
   "email": "dafs",
   "password": "asfd"
 }
 
+###
+
+PUT {{url}}/updateUser
+Content-Type: application/json
+
+{
+  "UserID":3,
+  "email": "e@e.com",
+  "password": 1234
+}
+
+
+###
+
+GET {{url}}/user/3

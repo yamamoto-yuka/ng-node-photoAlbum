@@ -18,7 +18,7 @@
         <input type="checkbox" class="form-check-input" id="exampleCheck1" />
         <label class="form-check-label" for="exampleCheck1">Check me out</label>
     </div>
-    <button (click)="signup()" class="btn btn-primary">SignUp</button>
-    <div *ngIf="signupStatus">|Sign up successful. Please log in <a routerLink="/login">here</a></div>
-    <div *ngIf="!signupStatus">Sorry, something went wrong. Server responded with{{ signupmessage.sqlMessage}}</div>
+    <button (click)="updateUser()" class="btn btn-primary">SignUp</button>
+    <!-- <div *ngIf="signupStatus">|Sign up successful. Please log in <a routerLink="/login">here</a></div>
+    <div *ngIf="!signupStatus">Sorry, something went wrong. Server responded with{{ signupmessage.sqlMessage}}</div> -->
 </div>
