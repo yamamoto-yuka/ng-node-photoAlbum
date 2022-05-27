@@ -19,7 +19,7 @@ export class PhotoDetailsComponent implements OnInit {
     let id:any = this.route.snapshot.paramMap.get("id");
 
     this.ps.getPhotoById(id).subscribe( photo => {
-      this.photo = photo;
+      this.photo = photo.photo;
     });
 
 

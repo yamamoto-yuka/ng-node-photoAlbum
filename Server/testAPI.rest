@@ -27,18 +27,18 @@ POST {{url}}/signup
 Content-Type: application/json
 
 {
-
   "email": "dafs",
   "password": "asfd"
 }
 
 ###
 
-PUT {{url}}/updateUser
+PUT {{url}}/updateuser
 Content-Type: application/json
 
 {
   "UserID":3,
+  "user_name":"Smith",
   "email": "e@e.com",
   "password": 1234
 }
@@ -47,3 +47,39 @@ Content-Type: application/json
 ###
 
 GET {{url}}/user/3
+
+
+###
+DELETE {{url}}/deleteuser/177
+
+
+###
+GET {{url}}/photos
+
+###
+GET {{url}}/photos/3
+
+### 
+POST {{url}}/photos
+Content-Type: application/json
+
+{
+  "albumId_fromC": 1,
+  "title_fromC": "test photograph cat",
+  "url_fromC": "testimg.jpg",
+  "tn_fromC": "tn_tesimg.jpg"
+}
+
+###
+POST {{url}}/upload
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+    
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file_fromC"; filename="/tn_tesimg.jpg" 
+Content-Type: image/png
+
+< /tn_tesimg.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+###
+DELETE  {{url}}/photos/9

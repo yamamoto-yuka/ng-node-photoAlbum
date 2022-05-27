@@ -1,8 +1,10 @@
 <div class="container center mt-5">
     <div class="mb-3">
         <label for="Inputname" class="form-label">Name</label>
-        <input [(ngModel)]="name" type="text" class="form-control" id="Inputname" />
+        <input [(ngModel)]="user_name" FormControls="name" type="text" class="form-control" id="Inpurname" />
+        <!-- <div *ngIf="name.errors.required">Name is required.</div> -->
     </div>
+
     <div class="mb-3">
         <label for="exampleInputEmail1" class="form-label">Email address</label>
         <input [(ngModel)]="email" type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" />
@@ -18,7 +20,9 @@
         <input type="checkbox" class="form-check-input" id="exampleCheck1" />
         <label class="form-check-label" for="exampleCheck1">Check me out</label>
     </div>
-    <button (click)="updateUser()" class="btn btn-primary">SignUp</button>
-    <!-- <div *ngIf="signupStatus">|Sign up successful. Please log in <a routerLink="/login">here</a></div>
-    <div *ngIf="!signupStatus">Sorry, something went wrong. Server responded with{{ signupmessage.sqlMessage}}</div> -->
+    <button (click)="updateUser()" class="btn btn-primary">Update</button> | <button (click)="deleteUser()" class="btn btn-secondary">Delete</button>
+    <div *ngIf="updateStatus" [style.display]="showMessage" [class.showMessage]="">Your details are successfully update!
+    </div>
+    <div class="errormessage" [style.display]="showMessage" *ngIf="!updateStatus">Something went wrong, Please try again!
+    </div>
 </div>

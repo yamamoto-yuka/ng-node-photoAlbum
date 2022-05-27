@@ -1,13 +1,15 @@
 import express, { json } from "express";
 import mysql from "mysql";
 import cors from "cors";
+import multer from "multer";
+import fs from "fs";
 
 const db = mysql.createConnection({
     host: "localhost",
     port: 8889,
     user: "root",
     password: "root",
-    database: "Employees",
+    database: "PhotoGallery",
 });
 
 let jsonData = [{
@@ -78,141 +80,241 @@ let jsonData = [{
 const server = express();
 server.use(cors());
 server.use(express.json());
+
+
+// static is where we tell the server
+server.use(express.static('uploads'));
 //This tells node to apply json format to all data
 db.connect(error => {
     if (error) console.log("Sorry cannot connect to db: ", error);
     else console.log("Connected to mysql db");
 });
 
-server.get("/employeesapi", (req, res) => {
-    // query(, callback function)
-    // let allEmpSP = "CALL `All_Emp_Data`()";
-    let allEmpSP = "SELECT * FROM Employee";
-    db.query(allEmpSP, (error, data, fields) => {
-        if (error) {
-            res.json({ EroorMessage: error });
-        } else {
-            res.json(data[0]);
-        }
-    });
+const storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+        cb(null, './uploads/')
+    },
+    filename: function(req, file, cb) {
+        // const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+        cb(null, file.originalname)
+    }
+})
+
+const fileupload = multer({ storage: storage })
+
+
+server.post('/upload', fileupload.single("file_fromC"), (req, res) => {
+    res.json({ fileupload: true, })
 });
 
-server.get("/employeesapi/:id", (req, res) => {
-    let emp_id = req.params.id;
-    let empSP = " CALL `One_emp_data`(?)";
-    db.query(empSP, [emp_id], (error, data, fields) => {
+server.get('/photos', (req, res) => {
+    let query = "CALL `getPhotos`()";
+    db.query(query, (error, allphotos) => {
         if (error) {
-            res.json({ ErrorMessafe: error });
+            res.json({ allphotos: false, message: error });
         } else {
-            res.json(data[0]);
+            res.json({ allphotos: allphotos[0], message: "returned photos" });
         }
-    });
-});
+    })
+})
 
-server.post("/login", (req, res) => {
-    let email = req.body.email;
-    let password = req.body.password;
-    // let loginQuery = "SELECT * FROM `users` WHERE users.email = `${email}` AND users.password = `${password}`"
-    let loginQuery = "CALL `login`(?,?)";
-    db.query(loginQuery, [email, password], (error, data, fields) => {
+server.get('/photos/:photoid', (req, res) => {
+    let query = "CALL `getPhotoByID`(?)";
+    db.query(query, [req.params.photoid], (error, photo) => {
         if (error) {
-            res.json({ ErrorMessage: error });
+            res.json({ photo: false, message: error });
         } else {
-            if (data[0].length === 0) {
-                res.json({
-                    login: false,
-                    message: "Sorry, you have provided wrong credentials",
-                });
-            } else {
-                res.json({
-                    data: data[0],
-                    login: true,
-                    message: "Login successful",
-                    // UserID: data[0].UserID,
-                    // email: data[0].email,
-                    // Crete the Auth KEy
-                });
-            }
+            res.json({ photo: photo[0][0], message: "Returned photo by ID" });
         }
-    });
-});
+    })
+})
 
-server.post("/signup", (req, res) => {
-    let name = req.body.name;
-    // will contain parameter
-    let email = req.body.email;
-    let password = req.body.password;
-    // let query = "INSERT INTO `users` (`UserID`, `user_name`, `email`, `password`) VALUES (NULL, ?, ?, ?);";
-    let querySP = "CALL `Insert_user`(?, ?, ?)!";
-    db.query(querySP, [name, email, password], (error, data, fields) => {
+server.post('/photos', (req, res) => {
+    let query = "CALL `addPhoto`(?, ?, ?, ?)";
+    db.query(query, [req.body.albumId_fromC, req.body.title_fromC, req.body.url_fromC, req.body.tn_fromC], (error, newphoto) => {
         if (error) {
-            res.json({
-                    signup: false,
-                    message: error
-                })
-                // res.json({ErrorMessage: error});
+            res.json({ newphoto: false, message: error });
         } else {
-            // if ((name && email && password) === "") {
-            //   res.json({
-            //     data: data[0],
-            //     signup: false,
-            //     message: "Sorry, please input every information.",
-            //   });
-            // } else {
-            res.json({
-                data: data[0],
-                signup: true,
-                message: "Signup successful.",
+            res.json({ newphoto: newphoto[0], message: "Photo added to the table" });
+        }
+    })
+})
+
+server.delete('/photos/:id', (req, res) => {
+    let query = "CALL `deletePhoto`(?)";
+    let getFilename = "CALL `getPhotoByID`(?)";
+    db.query(getFilename, [req.params.id], (error, data) => {
+        // res.json(data[0][0].data)
+        if (error) {
+
+        } else {
+            let file_to_be_deleted = data[0][0].url;
+            fs.unlink('./uploads/' + file_to_be_deleted, (error) => {
+                if (error) {
+                    res.json({ delStatus: false, message: error });
+                } else {
+                    db.query(query, [req.params.id], (error, deleteStatus) => {
+                        if (error) {
+                            res.json({ delStatus: false, message: error });
+                        } else {
+                            let del_succcess = deleteStatus[0][0].DEL_SUCCESS;
+                            if (del_succcess === 1) {
+                                res.json({ delStatus: del_succcess, message: 'Successfully deleted!' })
+                            } else {
+                                res.json({ delStatus: del_succcess, message: 'ID not found' })
+
+                            }
+                        }
+                    })
+                }
             });
-            // }
-        }
-    });
-});
-
-
-server.put('/updateUser', (req, res) => {
-    let userID = req.body.UserID;
-    let email = req.body.email;
-    let password = req.body.password;
-    let query = ' CALL `updateUser`(?, ?, ?)';
-    // order is really important!!!
-    db.query(query, [userID, email, password], (error, data) => {
-        if (error) {
-            res.json({ updata: false, message: error });
-        } else {
-            res.json({ update: true, message: "User successfully updated" });
         }
     })
+
 })
 
+// server.get("/employeesapi", (req, res) => {
+//     // query(, callback function)
+//     // let allEmpSP = "CALL `All_Emp_Data`()";
+//     let allEmpSP = "SELECT * FROM Employee";
+//     db.query(allEmpSP, (error, data, fields) => {
+//         if (error) {
+//             res.json({ EroorMessage: error });
+//         } else {
+//             res.json(data[0]);
+//         }
+//     });
+// });
 
-server.get('/user/:id', (req, res) => {
-    let userID = req.params.id;
-    let query = ' CALL `getUser`(?)';
-    db.query(query, [userID], (error, data) => {
-        if (error) {
-            res.json({ user: false, message: error })
-        } else {
-            if (data[0].length === 0) {
-                res.json({ user: false, message: "No user with that ID exists" })
-            } else {
-                res.json({ user: true, message: "User successfully", userData: data[0] })
-            }
-        }
-    })
-})
+// server.get("/employeesapi/:id", (req, res) => {
+//     let emp_id = req.params.id;
+//     let empSP = " CALL `One_emp_data`(?)";
+//     db.query(empSP, [emp_id], (error, data, fields) => {
+//         if (error) {
+//             res.json({ ErrorMessafe: error });
+//         } else {
+//             res.json(data[0]);
+//         }
+//     });
+// });
+
+// server.post("/login", (req, res) => {
+//     let email = req.body.email;
+//     let password = req.body.password;
+//     // let loginQuery = "SELECT * FROM `users` WHERE users.email = `${email}` AND users.password = `${password}`"
+//     let loginQuery = "CALL `login`(?,?)";
+//     db.query(loginQuery, [email, password], (error, data, fields) => {
+//         if (error) {
+//             res.json({ ErrorMessage: error });
+//         } else {
+//             if (data[0].length === 0) {
+//                 res.json({
+//                     login: false,
+//                     message: "Sorry, you have provided wrong credentials",
+//                 });
+//             } else {
+//                 res.json({
+//                     data: data[0],
+//                     login: true,
+//                     message: "Login successful",
+//                     // UserID: data[0].UserID,
+//                     // email: data[0].email,
+//                     // Crete the Auth KEy
+//                 });
+//             }
+//         }
+//     });
+// });
+
+// server.post("/signup", (req, res) => {
+//     let name = req.body.name;
+//     // will contain parameter
+//     let email = req.body.email;
+//     let password = req.body.password;
+//     // let query = "INSERT INTO `users` (`UserID`, `user_name`, `email`, `password`) VALUES (NULL, ?, ?, ?);";
+//     let querySP = "CALL `Insert_user`(?, ?, ?)";
+//     db.query(querySP, [name, email, password], (error, data, fields) => {
+//         if (error) {
+//             res.json({
+//                     signup: false,
+//                     message: error
+//                 })
+//                 // res.json({ErrorMessage: error});
+//         } else {
+//             // if ((name && email && password) === "") {
+//             //   res.json({
+//             //     data: data[0],
+//             //     signup: false,
+//             //     message: "Sorry, please input every information.",
+//             //   });
+//             // } else {
+//             res.json({
+//                 data: data[0],
+//                 signup: true,
+//                 message: "Signup successful.",
+//             });
+//             // }
+//         }
+//     });
+// });
+
+
+// server.put('/updateuser', (req, res) => {
+//     let userID = req.body.userID;
+//     let user_name = req.body.user_name;
+//     let email = req.body.email;
+//     let password = req.body.password;
+//     let query = ' CALL `updateUser`(?, ?, ?, ?)!';
+//     // order is really important!!!
+//     db.query(query, [userID, user_name, email, password], (error, data) => {
+//         if (error) {
+//             res.json({ updata: false, message: error });
+//         } else {
+//             res.json({ update: true, message: "User successfully updated" });
+//         }
+//     })
+// })
+
+
+// server.get('/user/:id', (req, res) => {
+//     let userID = req.params.id;
+//     let query = ' CALL `getUser`(?)';
+//     db.query(query, [userID], (error, data) => {
+//         if (error) {
+//             res.json({ user: false, message: error })
+//         } else {
+//             if (data[0].length === 0) {
+//                 res.json({ user: false, message: "No user with that ID exists" })
+//             } else {
+//                 res.json({ user: true, message: "User successfully", userData: data[0] })
+//             }
+//         }
+//     })
+// })
+
+// server.delete('/deleteuser/:id', (req, res) => {
+//     let userID = req.params.id;
+//     let query = 'CALL `deleteUser`(?)';
+//     db.query(query, [userID], (error, date) => {
+//         if (error) {
+//             res.json({ deleteUser: false, message: error });
+//         } else {
+//             res.json({ deleteUser: true, message: "User deleted successfully" });
+//         }
+//     })
+// })
 
 
 // req is data from the client to the server
 // res is data from the server to the client
-server.get("/photosapi", (req, res) => {
-    res.json(jsonData);
-});
+// server.get("/photosapi", (req, res) => {
+//     res.json(jsonData);
+// });
 
-server.get("/photosapi/:photoid", (req, res) => {
-    let id_from_client = req.params.photoid;
-    res.json(jsonData.find(x => x.id == id_from_client));
-});
+// server.get("/photosapi/:photoid", (req, res) => {
+//     let id_from_client = req.params.photoid;
+//     res.json(jsonData.find(x => x.id == id_from_client));
+// });
 
 server.listen(4400, function() {
     console.log("Server is successfully running on port 4400");

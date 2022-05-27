@@ -24,6 +24,8 @@ export class CommonService {
   private loginURL = 'http://localhost:4400/login';
   private singupURL = 'http://localhost:4400/signup';
   private userURL = 'http://localhost:4400/user';
+  private updateURL = 'http://localhost:4400/updateuser'
+  private deleteURL = 'http://localhost:4400/deleteuser'
 
   constructor(private http: HttpClient) {}
   loginService(email: string, password: string) {
@@ -47,5 +49,19 @@ export class CommonService {
 
   getUser(id: any) {
     return this.http.get<{ user: boolean, message: string, userData: [{ UserID: number, user_name: string, email: string, password: string }] }>(this.userURL + "/" + id);
+  }
+
+  updateUser(id: any, user_name:string, email: string, password: string) {
+    let updateBody = {
+      "userID": id,
+      "user_name": user_name,
+      "email": email,
+      "password": password
+    }
+    return this.http.put<{update:boolean, message:string}>(this.updateURL, updateBody)
+  }
+
+  deleteUser(id: number) {
+    return this.http.delete<{ deleteUser:boolean, message:any}>(this.deleteURL + '/' + id);
   }
 }
