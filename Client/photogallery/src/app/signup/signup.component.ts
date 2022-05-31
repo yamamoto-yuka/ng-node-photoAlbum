@@ -9,20 +9,22 @@ import { CommonService } from '../services/common.service';
 export class SignupComponent implements OnInit {
   name: string = '';
   email: string = '';
-  password: string = '';
+  password1: string = '';
+  password2: string = '';
   signupStatus = false;
   signupmessage: any = '';
   constructor(private cs: CommonService) {}
 
-  signup() {
-    this.cs
-      .signupService(this.name, this.email, this.password)
-      .subscribe((signupData) => {
-        console.log(signupData.signup);
-        this.signupStatus = signupData.signup;
-        this.signupmessage = signupData.message;
-        console.log(this.signupmessage);
-      });
+  signup(email_: any) {
+    // this.cs
+    //   .signupService(this.name, this.email, this.password)
+    //   .subscribe((signupData) => {
+    //     console.log(signupData.signup);
+    //     this.signupStatus = signupData.signup;
+    //     this.signupmessage = signupData.message;
+    //     console.log(this.signupmessage);
+    //   });
+    console.log(email_);
   }
   ngOnInit(): void {}
 }

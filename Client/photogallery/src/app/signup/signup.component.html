@@ -1,24 +1,42 @@
 <div class="container center mt-5">
-    <div class="mb-3">
-        <label for="Inputname" class="form-label">Name</label>
-        <input [(ngModel)]="name" type="text" class="form-control" id="Inputname" />
-    </div>
-    <div class="mb-3">
-        <label for="exampleInputEmail1" class="form-label">Email address</label>
-        <input [(ngModel)]="email" type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" />
-        <div id="emailHelp" class="form-text">
-            We'll never share your email with anyone else.
+    <!-- Template valiables - Hold the object of the element of the element they are declared within-->
+    <form #form="ngForm" (ngSubmit)="signup(email_)">
+        <div class="mb-3">
+            <label for="Inputname" class="form-label">Name</label>
+            <input name="name" #name_="ngModel" [(ngModel)]="name" id="Inputname" type="text" class="form-control" required />
         </div>
-    </div>
-    <div class="mb-3">
-        <label for="exampleInputPassword1" class="form-label">Password</label>
-        <input [(ngModel)]="password" type="password" class="form-control" id="exampleInputPassword1" />
-    </div>
-    <div class="mb-3 form-check">
-        <input type="checkbox" class="form-check-input" id="exampleCheck1" />
-        <label class="form-check-label" for="exampleCheck1">Check me out</label>
-    </div>
-    <button (click)="signup()" class="btn btn-primary">SignUp</button>
-    <div *ngIf="signupStatus">|Sign up successful. Please log in <a routerLink="/login">here</a></div>
-    <div *ngIf="!signupStatus">Sorry, something went wrong. Server responded with{{ signupmessage.sqlMessage}}</div>
+        <div class="mb-3">
+            <label for="email" class="form-label">Email address</label>
+            <input name="email" #email_="ngModel" [(ngModel)]="email" id="email" type="email" class="form-control" required pattern="^[^s@]+@[^s@]+.[^s@]{2,}$" aria-describedby="emailHelp" />
+            <div id="emailHelp" class="form-text">
+                We'll never share your email with anyone else.
+            </div>
+            <div class="alert alert-danger" role="alert" *ngIf="email_.touched && email_.invalid">
+                The expected email format is bob@domain.com
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="password1" class="form-label">Password</label>
+            <input name="password1" #password1_="ngModel" [(ngModel)]="password1" id="password1" type="password" class="form-control" pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$" required />
+        </div>
+        <div class="alert alert-danger" role="alert" *ngIf="password1_.touched && password1_.invalid">
+            Password should contain at least 8 character, 1 number and 1 special character
+        </div>
+        <div class="mb-3">
+            <label for="password2" class="form-label">Confirm Password</label>
+            <input name="password2" #password2_="ngModel" [(ngModel)]="password2" id="password2" type="password" class="form-control" pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$" value="password1_.value" required />
+        </div>
+        <div class="alert alert-danger" role="alert" *ngIf="password2_.touched && password2_.invalid">
+            Passwords do not match!
+        </div>
+        <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
+      SignUp
+    </button>
+        <div *ngIf="signupStatus">
+            |Sign up successful. Please log in <a routerLink="/login">here</a>
+        </div>
+        <div *ngIf="!signupStatus">
+            Sorry, something went wrong. Server responded with{{ signupmessage.sqlMessage }}
+        </div>
+    </form>
 </div>
