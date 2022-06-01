@@ -15,7 +15,7 @@ export class SignupComponent implements OnInit {
   signupmessage: any = '';
   constructor(private cs: CommonService) {}
 
-  signup(email_: any) {
+  signup(email: any) {
     // this.cs
     //   .signupService(this.name, this.email, this.password)
     //   .subscribe((signupData) => {
@@ -24,7 +24,7 @@ export class SignupComponent implements OnInit {
     //     this.signupmessage = signupData.message;
     //     console.log(this.signupmessage);
     //   });
-    console.log(email_);
+    console.log(email);
   }
   ngOnInit(): void {}
 }
