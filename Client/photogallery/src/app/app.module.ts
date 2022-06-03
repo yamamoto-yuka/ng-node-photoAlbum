@@ -11,6 +11,8 @@ import { LoginComponent } from './login/login.component';
 import { SignupComponent } from './signup/signup.component';
 import { UpdateUserComponent } from './update-user/update-user.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { MynameComponent } from './myname/myname.component';
+import { PrintnameComponent } from './printname/printname.component';
 
 @NgModule({
   declarations: [
@@ -21,6 +23,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     LoginComponent,
     SignupComponent,
     UpdateUserComponent,
+    MynameComponent,
+    PrintnameComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule, FormsModule, ReactiveFormsModule],
   providers: [],
