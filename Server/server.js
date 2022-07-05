@@ -326,5 +326,5 @@ server.delete('/photos/:id', (req, res) => {
 // });
 
 server.listen(4400, function() {
-    console.log("Server is successfully running on port 4400");
+    console.log("Server is successfully running on port 4400 and connected to MySWL on", process.env.DBHOST);
 });

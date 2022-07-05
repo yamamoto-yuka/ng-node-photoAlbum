@@ -56,6 +56,9 @@ DELETE {{url}}/deleteuser/177
 GET {{url}}/photos
 
 ###
+GET https://lobster-app-hci5y.ondigitalocean.app/photos
+
+###
 GET {{url}}/photos/22
 
 ### 
