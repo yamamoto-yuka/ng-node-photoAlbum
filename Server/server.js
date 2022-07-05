@@ -3,14 +3,23 @@ import mysql from "mysql";
 import cors from "cors";
 import multer from "multer";
 import fs from "fs";
+import 'dotenv/config';
 
+// const db = mysql.createConnection({
+//     host: "localhost",
+//     port: 8889,
+//     user: "root",
+//     password: "root",
+//     database: "PhotoGallery",
+// });
 const db = mysql.createConnection({
-    host: "localhost",
-    port: 8889,
-    user: "root",
-    password: "root",
-    database: "PhotoGallery",
+  host: process.env.DBHOST,
+  port: process.env.DBPORT,
+  user: process.env.DBUSER,
+  password: process.env.DBPASSWORD,
+  database: process.env.DBDATABASE
 });
+
 
 let jsonData = [{
         albumId: 1,
