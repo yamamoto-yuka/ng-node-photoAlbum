@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { PhotoserviceService } from '../services/photoservice.service';
 import { Photo, PhotoTB } from '../interfaces/photo.interface';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-photos',
@@ -8,7 +9,8 @@ import { Photo, PhotoTB } from '../interfaces/photo.interface';
   styleUrls: ['./photos.component.scss']
 })
 export class PhotosComponent implements OnInit {
-
+  name_of_env = environment.name;
+  server = environment.server;
   photos: any[] = [];
   formdata: any;
   albumId: number = 0;
